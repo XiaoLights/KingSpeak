@@ -16,6 +16,8 @@
             striped: true,                      //是否显示行间隔色
             pagination: true,                   //是否显示分页（*）
             sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            singleSelect: true,
+            clickToSelect: true,
             queryParams: Current.GetParams,//传递参数（*）
             pageSize: 10,                       //每页的记录行数（*）
             pageList: [10, 20, 30],            //可供选择的每页的行数（*）
@@ -46,23 +48,28 @@
                 field: 'State',
                 title: '状态'
                  , sortable: true
-                 , formatter: function (value) {
-                     if (value == '1') {
-                         return '正常';
+                 , formatter: function (value, row) {
+                     var html = '';
+                     if (row.State == "1") {
+                         var t = "'" + row.ID + "','2'";
+                         html += '<a href="javacript:void(0)" onclick="applicationIndex.ChangeState(' + t + ')">启用</a>';
                      }
                      else {
-                         return '禁用';
+                         var t = "'" + row.ID + "','1'";
+                         html += '<a href="javacript:void(0)" onclick="applicationIndex.ChangeState(' + t + ')">禁用</a>';
                      }
+                     return html;
                  }
             }, {
                 field: 'ExpirDate',
                 title: '有效期'
                  , sortable: true
-            }, {
-                field: 'UserId',
-                title: '操作'
-                 , formatter: Current.GetFunHtml
             }
+            //, {
+            //    field: 'UserId',
+            //    title: '操作'
+            //     , formatter: Current.GetFunHtml
+            //}
 
             ]
         });
@@ -82,14 +89,8 @@
 
     this.GetFunHtml = function (value, row) {
         var html = '';
-        if (row.State == "1") {
-            var t = "'" + row.ID + "','2'";
-            html += '<a href="javacript:void(0)" onclick="applicationIndex.ChangeState(' + t + ')">禁用</a>';
-        }
-        else {
-            var t = "'" + row.ID + "','1'";
-            html += '<a href="javacript:void(0)" onclick="applicationIndex.ChangeState(' + t + ')">启用</a>';
-        }
+        var t = "'" + row.ID + "'";
+        html += '<a href="javacript:void(0)" onclick="applicationIndex.UpdateApp()">修改</a>';
         return html;
     }
 
@@ -106,44 +107,77 @@
         })
     }
 
-    this.AddApp = function () {
-        //$.post("", $("#addform"), function (data) {
-        //    if (data.Success) {
-        //        layer.alert("新增成功", { time: 500 });
-        //        layer.closeAll('page');
-        //    } else {
-        //        layer.alert(data.ErrorMsg);
+    this.SaveApp = function () {
+        $.post("/Admin/Application/SaveApp", $("#addform").serialize(), function (data) {
+            if (data.Success) {
+                layer.alert("保存成功", { time: 1000 });
+                layer.closeAll('page');
+                $('#table').bootstrapTable("refresh");
+            } else {
+                layer.alert(data.ErrorMsg);
 
-        //    }
-        //})
-       
-        layer.alert("新增成功", {
-            time: 1000,
-            function () {
-                alert(123);
+            }
+        })
+    }
+
+    this.UpdateApp = function () {
+        var a = $('#table').bootstrapTable('getSelections');
+        if (a.length == 1) {
+            Current.ClearForm();
+            $("#hidID").val(a[0].ID);
+            $("#txtappName").val(a[0].AppName);
+            $("#txtappDes").text(a[0].AppDescripts);
+            $("#txtappToken").val(a[0].AppToken);
+            $("#datepicker").val(a[0].ExpirDate);
+            Current.OpenDialog();
+        } else {
+            layer.msg("请选择一条记录", { time: 1000 });
+        }
+    }
+
+    this.DeleteApp = function () {
+
+    }
+
+    this.ClearForm = function () {
+        $("#hidID").val('');
+        $("#txtappName").val('');
+        $("#txtappDes").text('');
+        $("#txtappToken").val('');
+        $("#datepicker").val('');
+    }
+
+    this.OpenDialog = function () {
+        layer.open({
+            title: '添加接入应用',
+            type: 1,
+            area: ['700px', '450px'],//大小设置
+            fixed: false, //不固定
+            maxmin: true,//最大化最小化
+            btn: ['保存', '放弃'],
+            content: $('#addApp'),
+            btn1: function () {
+                //按钮1的回掉（保存按钮)
+                Current.SaveApp();
             }
         });
-        layer.closeAll('page');
+
     }
 
     this.BtnClick = function () {
         $("#btn_search").click(function () {
             $('#table').bootstrapTable('selectPage', 1);
         })
+
         $("#btn_add").click(function () {
-            layer.open({
-                title: '添加接入应用',
-                type: 1,
-                area: ['700px', '450px'],//大小设置
-                fixed: false, //不固定
-                maxmin: true,//最大化最小化
-                btn: ['保存', '放弃'],
-                content: $('#addApp'),
-                btn1: function () {
-                    //按钮1的回掉（保存按钮)
-                    Current.AddApp();
-                }
-            });
+            Current.ClearForm();
+            Current.OpenDialog();
+        })
+
+        $("#btn_update").click(function () {
+            Current.UpdateApp();
+        })
+        $("#btn_del").click(function () {
 
         })
     }

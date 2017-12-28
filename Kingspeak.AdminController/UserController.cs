@@ -194,7 +194,7 @@ namespace Kingspeak.AdminController
         private List<Tb_AppToken> GetAppTokenList()
         {
             UserService service = new UserService();
-            return service.GetList<Tb_AppToken>(it => it.State == 0);
+            return service.GetList<Tb_AppToken>(it => it.State == 1);
         }
     }
 }

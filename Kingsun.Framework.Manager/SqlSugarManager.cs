@@ -89,7 +89,7 @@ namespace Kingsun.Framework.Manager
         /// <param name="entity">更新的对象</param>
         /// <param name="expr">需要更新的字段</param>
         /// <returns></returns>
-        public bool Update<T>(T entity, Expression<Func<T, object>> primarykey, Expression<Func<T, object>> expr) where T : class, new()
+        public bool Update<T>(T entity, Expression<Func<T, object>> expr) where T : class, new()
         {
             using (var db = repository.GetInstance())
             {

@@ -3,6 +3,11 @@
     this.Init = function () {
         Current.InitTable();
         Current.BtnClick();
+
+        $("#selresource").change(function () {
+            $('#table').bootstrapTable('selectPage', 1);
+        })
+
     }
 
     this.InitTable = function () {
@@ -87,7 +92,7 @@
         return temp;
     }
 
-    this.GetFunHtml = function (value,row) {
+    this.GetFunHtml = function (value, row) {
         var html = '<a>修改</a>';
         return html;
     }
