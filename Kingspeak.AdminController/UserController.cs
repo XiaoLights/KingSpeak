@@ -18,6 +18,7 @@ namespace Kingspeak.AdminController
     {
         public ActionResult Index()
         {
+            ViewBag.AppList = GetAppTokenList();
             return View();
         }
 
@@ -26,7 +27,7 @@ namespace Kingspeak.AdminController
             return View();
         }
 
-        public JsonResult GetUserList(int pageindex, int pagesize, string sortName, string sortOrder, string SearchKey, int? SearchType)
+        public JsonResult GetUserList(int pageindex, int pagesize, string sortName, string sortOrder, string SearchKey, int? SearchType, int? Source)
         {
             PageParams<Tb_UserInfo> param = new PageParams<Tb_UserInfo>();
             UserService service = new UserService();
@@ -49,7 +50,10 @@ namespace Kingspeak.AdminController
                         break;
                 }
             }
-
+            if (Source.HasValue && Source.Value != 0)
+            {
+                param.Wheres.Add(it => it.ResourceID == Source);
+            }
             if (!string.IsNullOrEmpty(sortName))
             {
                 param.StrOrderColumns = sortName + " " + sortOrder;
@@ -185,6 +189,12 @@ namespace Kingspeak.AdminController
 
                 }
             }
+        }
+
+        private List<Tb_AppToken> GetAppTokenList()
+        {
+            UserService service = new UserService();
+            return service.GetList<Tb_AppToken>(it => it.State == 0);
         }
     }
 }

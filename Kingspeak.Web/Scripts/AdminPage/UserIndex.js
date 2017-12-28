@@ -82,6 +82,7 @@
             , SearchKey: $("#searchkey").val()
             , sortOrder: params.order//排序
             , sortName: params.sort//排序字段
+            , Source: $("#selresource").val()
         };
         return temp;
     }

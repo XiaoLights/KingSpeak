@@ -3,6 +3,9 @@
     this.Init = function () {
         Current.InitTable();
         Current.BtnClick();
+        $('#datepicker').datepicker({
+            autoclose: true
+        })
     }
 
     this.InitTable = function () {
@@ -103,19 +106,45 @@
         })
     }
 
+    this.AddApp = function () {
+        //$.post("", $("#addform"), function (data) {
+        //    if (data.Success) {
+        //        layer.alert("新增成功", { time: 500 });
+        //        layer.closeAll('page');
+        //    } else {
+        //        layer.alert(data.ErrorMsg);
+
+        //    }
+        //})
+       
+        layer.alert("新增成功", {
+            time: 1000,
+            function () {
+                alert(123);
+            }
+        });
+        layer.closeAll('page');
+    }
+
     this.BtnClick = function () {
         $("#btn_search").click(function () {
             $('#table').bootstrapTable('selectPage', 1);
         })
         $("#btn_add").click(function () {
             layer.open({
-                content: '测试回调',
-                yes: function (index, layero) {
-                    //do something
-                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                title: '添加接入应用',
+                type: 1,
+                area: ['700px', '450px'],//大小设置
+                fixed: false, //不固定
+                maxmin: true,//最大化最小化
+                btn: ['保存', '放弃'],
+                content: $('#addApp'),
+                btn1: function () {
+                    //按钮1的回掉（保存按钮)
+                    Current.AddApp();
                 }
             });
-             
+
         })
     }
 }

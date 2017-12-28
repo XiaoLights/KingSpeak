@@ -21,6 +21,11 @@ namespace Kingspeak.Admin.Models
         /// <summary>
         /// 来源
         /// </summary>
+        public int? ResourceID { get; set; }
+
+        /// <summary>
+        /// 来源
+        /// </summary>
         public string Resource { get; set; }
 
         /// <summary>

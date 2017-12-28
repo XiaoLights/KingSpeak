@@ -37,6 +37,15 @@
         <div class="col-sm-1">
             <select class="form-control" id="selresource">
                 <option value="0">来源筛选</option>
+                @{
+                    if (ViewBag.AppList != null)
+                    {
+                        foreach (var a in ViewBag.AppList)
+                        {
+                            <option value="@a.AppID">@a.AppName</option>
+                        }
+                    }
+                }
             </select>
         </div>
         <div class="btn-group">
