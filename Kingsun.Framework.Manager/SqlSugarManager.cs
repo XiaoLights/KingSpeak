@@ -14,13 +14,61 @@ namespace Kingsun.Framework.Manager
     {
         public string OperateError = "";
         public SqlSugarManager() { }
-        SqlsugarRepository repository = new SqlsugarRepository();
+        protected SqlsugarRepository repository = new SqlsugarRepository();
 
         public bool Delete<T>(T entity) where T : class, new()
         {
             using (var db = repository.GetInstance())
             {
                 int i = db.Deleteable<T>().Where(entity).ExecuteCommand();
+                OperateError = repository._operatorError;
+                return i > 0;
+            }
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="id">主键编号</param>
+        /// <returns></returns>
+        public bool Delete<T>(object id) where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                int i = db.Deleteable<T>(id).ExecuteCommand();
+                OperateError = repository._operatorError;
+                return i > 0;
+            }
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ids">主键编号数组</param>
+        /// <returns></returns>
+        public bool Delete<T>(object[] ids) where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                int i = db.Deleteable<T>(ids).ExecuteCommand();
+                OperateError = repository._operatorError;
+                return i > 0;
+            }
+        }
+
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ids">删除条件</param>
+        /// <returns></returns>
+        public bool Delete<T>(System.Linq.Expressions.Expression<Func<T, bool>> expr) where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                int i = db.Deleteable<T>(expr).ExecuteCommand();
                 OperateError = repository._operatorError;
                 return i > 0;
             }
@@ -52,11 +100,67 @@ namespace Kingsun.Framework.Manager
             }
         }
 
+        public T Get<T>(System.Linq.Expressions.Expression<Func<T, bool>> expr, string orderBy) where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                T entity = db.Queryable<T>().Where(expr).OrderBy(orderBy).First();
+                OperateError = repository._operatorError;
+                return entity;
+            }
+        }
+
         public List<T> GetList<T>(Expression<Func<T, bool>> expr) where T : class, new()
         {
             using (var db = repository.GetInstance())
             {
                 List<T> list = db.Queryable<T>().Where(expr).ToList();
+                OperateError = repository._operatorError;
+                return list;
+            }
+        }
+        public List<T> GetList<T>(Expression<Func<T, bool>> expr, string orderBy) where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                List<T> list = db.Queryable<T>().Where(expr).OrderBy(orderBy).ToList();
+                OperateError = repository._operatorError;
+                return list;
+            }
+        }
+        public List<T> GetList<T>() where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                List<T> list = db.Queryable<T>().ToList();
+                OperateError = repository._operatorError;
+                return list;
+            }
+        }
+
+        public List<T> GetList<T>(string orderBy) where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                List<T> list = db.Queryable<T>().OrderBy(orderBy).ToList();
+                OperateError = repository._operatorError;
+                return list;
+            }
+        }
+
+        public List<T> GetList<T>(List<Expression<Func<T, bool>>> exprs) where T : class, new()
+        {
+            using (var db = repository.GetInstance())
+            {
+                var queryable = db.Queryable<T>();
+                if (exprs != null)
+                {
+                    foreach (var where in exprs)
+                    {
+                        queryable = queryable.Where(where);
+                    }
+                }
+                List<T> list = queryable.ToList();
                 OperateError = repository._operatorError;
                 return list;
             }
@@ -76,6 +180,7 @@ namespace Kingsun.Framework.Manager
         {
             using (var db = repository.GetInstance())
             {
+                //KeyValuePair<string, List<SqlSugar.SugarParameter>> sql = db.Updateable<T>(entity).ToSql();
                 int i = db.Updateable<T>(entity).ExecuteCommand();
                 OperateError = repository._operatorError;
                 return i > 0;
@@ -107,6 +212,8 @@ namespace Kingsun.Framework.Manager
             }
 
         }
+
+
 
         public List<T> GetPageList<T>(int pageIndex, int pageSize,
             Expression<Func<T, object>> orderby, int orderType,

@@ -7,8 +7,11 @@ namespace Kingspeak.Web
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new HandleErrorAttribute());
-            filters.Add(new Kingspeak.AdminController.MyAuthorizationAttribute());
+            filters.Add(new Kingspeak.MyController.MyAuthorizationAttribute());
+            filters.Add(new Kingspeak.MyController.AboutErrorAttribute());
+         
+
+
         }
     }
 }

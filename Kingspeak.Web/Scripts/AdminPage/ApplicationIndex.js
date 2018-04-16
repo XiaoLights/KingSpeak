@@ -4,13 +4,15 @@
         Current.InitTable();
         Current.BtnClick();
         $('#datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            clearBtn: true,//清除按钮
             autoclose: true
         })
     }
 
     this.InitTable = function () {
         $('#table').bootstrapTable({
-            url: '/Admin/Application/GetAppTokenList',                           //请求后台的URL（*）
+            url: Common.GetRightUrl('/Admin/Application/GetAppTokenList'),                           //请求后台的URL（*）
             method: 'post',                     //请求方式（*）
             toolbar: '#toolbar',                   //工具按钮用哪个容器
             striped: true,                      //是否显示行间隔色
@@ -52,11 +54,11 @@
                      var html = '';
                      if (row.State == "1") {
                          var t = "'" + row.ID + "','2'";
-                         html += '<a href="javacript:void(0)" onclick="applicationIndex.ChangeState(' + t + ')">启用</a>';
+                         html += '<a href="javascript:void(0)" title="启用" onclick="applicationIndex.ChangeState(' + t + ')"><span class="label label-success">启用</span></a>';
                      }
                      else {
                          var t = "'" + row.ID + "','1'";
-                         html += '<a href="javacript:void(0)" onclick="applicationIndex.ChangeState(' + t + ')">禁用</a>';
+                         html += '<a href="javascript:void(0)" title="禁用" onclick="applicationIndex.ChangeState(' + t + ')"><span class="label label-danger">禁用</span></a>';
                      }
                      return html;
                  }
@@ -64,6 +66,7 @@
                 field: 'ExpirDate',
                 title: '有效期'
                  , sortable: true
+                 , formatter: function (value) { return Common.FormatTime(value, 'yyyy-MM-dd'); }
             }
             //, {
             //    field: 'UserId',
@@ -96,7 +99,7 @@
 
     this.ChangeState = function (id, state) {
         var obj = { ID: id, State: state };
-        $.post("/Admin/Application/ChangeState", obj, function (data) {
+        $.post(Common.GetRightUrl("/Admin/Application/ChangeState"), obj, function (data) {
             if (data.Success) {
                 layer.msg((state == "1" ? "启用" : "禁用") + "成功");
                 $('#table').bootstrapTable("refresh");
@@ -108,7 +111,7 @@
     }
 
     this.SaveApp = function () {
-        $.post("/Admin/Application/SaveApp", $("#addform").serialize(), function (data) {
+        $.post(Common.GetRightUrl("/Admin/Application/SaveApp"), $("#addform").serialize(), function (data) {
             if (data.Success) {
                 layer.alert("保存成功", { time: 1000 });
                 layer.closeAll('page');
@@ -128,7 +131,8 @@
             $("#txtappName").val(a[0].AppName);
             $("#txtappDes").text(a[0].AppDescripts);
             $("#txtappToken").val(a[0].AppToken);
-            $("#datepicker").val(a[0].ExpirDate);
+            $("#datepicker").datepicker("setDate", Common.FormatTime(a[0].ExpirDate, 'yyyy-MM-dd'));//设置
+           // $("#datepicker").val();
             Current.OpenDialog();
         } else {
             layer.msg("请选择一条记录", { time: 1000 });
@@ -151,9 +155,8 @@
         layer.open({
             title: '添加接入应用',
             type: 1,
-            area: ['700px', '450px'],//大小设置
+            area: ['600px', '360px'],//大小设置
             fixed: false, //不固定
-            maxmin: true,//最大化最小化
             btn: ['保存', '放弃'],
             content: $('#addApp'),
             btn1: function () {

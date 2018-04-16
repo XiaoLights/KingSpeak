@@ -17,8 +17,8 @@ namespace Kingspeak.Web.Areas.Admin
             context.MapRoute(
                 "Admin_default",
                 "Admin/{controller}/{action}/{id}",
-                new {  action = "Index", id = UrlParameter.Optional }
-                ,new string[] { "Kingspeak.AdminController" }
+                new { id = UrlParameter.Optional }
+                ,new string[] { "Kingspeak.MyController.AdminController" }
             );
         }
     }

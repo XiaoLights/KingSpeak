@@ -22,11 +22,11 @@ namespace Kingsun.Core.Utils
 
         public List<Expression<Func<T, bool>>> Wheres { get; set; }
 
+      
+        private int _orderType = 0;
         /// <summary>
         /// 排序方式0:ASC,1:DESC 
         /// </summary>
-        private int _orderType = 0;
-
         public int OrderType
         {
             set { _orderType = value; }
